@@ -53,7 +53,7 @@ export const match = (url: string | URL): RouteContextValue => {
   if (typeof url === "string") {
     url = new URL(url);
   }
-  const path = url.pathname.slice(1);
+  const path = url.pathname;
   const route = staticRoutes[path]!;
   const props: Props = {};
 
