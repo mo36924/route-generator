@@ -30,8 +30,8 @@ import { useState, useEffect } from "preact/hooks";
 /**__imports__**/
 
 type Props = { [key: string]: string };
-type Route<T = any> = ComponentType<T> & { load: () => Promise<any> };
-type DynamicImport<T = any> = Promise<{ default: ComponentType<T> }>;
+type Route<T = any> = ComponentType<T> & { load: () => Promise<void> };
+type DynamicImport<T = {}> = Promise<{ default: ComponentType<T> }>;
 type StaticRoutes = { [path: string]: Route | undefined };
 type DynamicRoutes = [RegExp, string[], Route][];
 
@@ -235,13 +235,13 @@ export default async (options?: Options) => {
         const params = paramNames.map((name) => `${name}: string`).join();
 
         dynamicImports.push(
-          `const ${componentName} = lazy(() => import('${importPath}') as DynamicImport<{${params}}>);`,
+          `const ${componentName} = lazy((): DynamicImport<{${params}}> => import('${importPath}'));`,
         );
 
         dynamicRoutes.push(`[${routePath}, ${JSON.stringify(paramNames)}, ${componentName} as Route<{${params}}>]`);
       } else {
         staticRoutes.push(`'${routePath}': ${componentName} as Route`);
-        dynamicImports.push(`const ${componentName} = lazy(() => import('${importPath}') as DynamicImport);`);
+        dynamicImports.push(`const ${componentName} = lazy((): DynamicImport => import('${importPath}'));`);
       }
     }
 
